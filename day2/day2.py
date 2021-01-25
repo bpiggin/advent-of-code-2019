@@ -18,5 +18,21 @@ def part_one():
     return result[0]
 
 
+# -----------------------------------------------------------
+
+def part_two(p_input):
+    noun, verb = 0, 0
+    for i in range(99):
+        for j in range(99):
+            trial_input = p_input.copy()
+            trial_input[1:3] = [i, j]
+            output = run_intcode(trial_input)
+            if output[0] == 19690720:
+                noun, verb = i, j
+                break
+    return 100 * noun + verb
+
+
 if __name__ == "__main__":
-    print(part_one())
+    # print(part_one())
+    print(part_two(f_input))
