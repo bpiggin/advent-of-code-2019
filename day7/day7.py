@@ -1,5 +1,8 @@
+from itertools import permutations
+
 f = open("input.txt", "r")
 f_input = [int(x) for x in f.read().split(",")]
+
 
 increments = {"1": 4, "2": 4, "3": 2, "4": 2, "5": 0, "6": 0, "7": 4, "8": 4}
 
@@ -21,8 +24,7 @@ def parse_params(code, opcode, i, mode_1, mode_2):
 
 
 def run_intcode(code, p_input):
-    output = 0
-    i = 0
+    output, i, j = 0, 0, 0
     while code[i] != 99:
         opcode, mode_1, mode_2 = parse_instruction(str(code[i]))
         par_1, par_2 = parse_params(code, opcode, i, mode_1, mode_2)
@@ -34,11 +36,11 @@ def run_intcode(code, p_input):
             code[code[i + 3]] = par_1 * par_2
 
         if opcode == "3":
-            code[code[i + 1]] = p_input
+            code[code[i + 1]] = p_input[j]
+            j += 1
 
         if opcode == "4":
             output = par_1
-            print(output)
 
         if opcode == "5":
             i = par_2 if not par_1 == 0 else i + 3
@@ -57,19 +59,28 @@ def run_intcode(code, p_input):
     return (code, output)
 
 
+def run_amps_in_series(f_input, phases):
+    curr_input = 0
+    for i in range(5):
+        code, output = run_intcode(f_input, [phases[i], curr_input])
+        curr_input = output
+    return curr_input
+
+
 def part_one():
-    code, output = run_intcode(f_input, 1)
-    return output
+    phases = list(permutations([0, 1, 2, 3, 4]))
+    max_output = max([run_amps_in_series(f_input, phase) for phase in phases])
+    print("Maximum output: ", max_output)
 
 
 # -----------------------------------------------------------
 
 
-def part_two():
-    code, output = run_intcode(f_input, 5)
-    return output
+# def part_two():
+# code, output = run_intcode(f_input, 5)
+# return output
 
 
 if __name__ == "__main__":
-    # part_one()
-    part_two()
+    part_one()
+    # part_two()
